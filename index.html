@@ -1,0 +1,1509 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Daftar Belanja</title>
+
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts: Inter (Apple-like font) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- 
+    ================================================================
+    ======================= AWAL BAGIAN CSS ========================
+    ================================================================
+    -->
+    <style>
+      /* CSS Variables for a Pure Black & White Theme */
+      :root {
+        --bg-primary: #f5f5f7;
+        --bg-secondary: #ffffff;
+        --bg-tertiary: #e5e5e7;
+        --text-primary: #1d1d1f;
+        --text-secondary: #6e6e73;
+        --border-color: #d2d2d7;
+        --accent-color: #1d1d1f;
+        --accent-color-hover: #333333;
+        --accent-text-color: #ffffff;
+        --urgent-color: #dc2626;
+        --link-color: #007aff;
+      }
+
+      [data-theme="dark"] {
+        --bg-primary: #000000;
+        --bg-secondary: #1c1c1e;
+        --bg-tertiary: #2c2c2e;
+        --text-primary: #ffffff;
+        --text-secondary: #8e8e93;
+        --border-color: #3a3a3c;
+        --accent-color: #ffffff;
+        --accent-color-hover: #e5e5e5;
+        --accent-text-color: #000000;
+        --urgent-color: #ef4444;
+        --link-color: #0a84ff;
+      }
+
+      /* Base styles */
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, Helvetica, Arial, sans-serif;
+        background-color: var(--bg-primary);
+        color: var(--text-primary);
+        transition: background-color 0.3s, color 0.3s;
+      }
+
+      /* Component styles */
+      .card {
+        background-color: var(--bg-secondary);
+      }
+      .text-muted {
+        color: var(--text-secondary);
+      }
+      .input-field {
+        border: 1px solid var(--border-color);
+        background-color: var(--bg-secondary);
+        color: var(--text-primary);
+        transition: border-color 0.2s, box-shadow 0.2s;
+      }
+      .input-field:focus {
+        box-shadow: 0 0 0 2px var(--accent-color);
+        border-color: transparent;
+        outline: none;
+      }
+      .input-error {
+        border-color: var(--urgent-color) !important;
+      }
+      .input-error:focus {
+        box-shadow: 0 0 0 2px var(--urgent-color) !important;
+      }
+      .btn {
+        transition: all 0.2s;
+        border: 1px solid transparent;
+      }
+      .btn-primary {
+        background-color: var(--accent-color);
+        color: var(--accent-text-color);
+        border-color: var(--accent-color);
+      }
+      .btn-primary:hover {
+        background-color: var(--accent-color-hover);
+      }
+      .btn-secondary {
+        background-color: var(--bg-tertiary);
+        color: var(--text-primary);
+        border-color: var(--border-color);
+      }
+      .btn-secondary:hover {
+        background-color: var(--border-color);
+      }
+
+      /* Drag & Drop styles */
+      .dragging {
+        opacity: 0.5;
+        background-color: var(--bg-tertiary);
+      }
+      .drag-over {
+        border: 2px dashed var(--accent-color);
+      }
+
+      /* Modal styles */
+      .modal-backdrop {
+        background-color: rgba(0, 0, 0, 0.5);
+        transition: opacity 0.3s ease;
+        visibility: hidden;
+        opacity: 0;
+      }
+      .modal-content {
+        background-color: var(--bg-secondary);
+        transition: transform 0.3s ease, opacity 0.3s ease;
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      .modal-visible {
+        visibility: visible;
+        opacity: 1;
+      }
+      .modal-visible .modal-content {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      /* Custom checkbox */
+      .custom-checkbox {
+        appearance: none;
+        -webkit-appearance: none;
+        height: 1.5rem;
+        width: 1.5rem;
+        border: 2px solid var(--border-color);
+        border-radius: 0.375rem;
+        position: relative;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .custom-checkbox:checked {
+        background-color: var(--accent-color);
+        border-color: var(--accent-color);
+      }
+      .custom-checkbox:checked::after {
+        content: "✔";
+        font-size: 1rem;
+        color: var(--accent-text-color);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      /* Urgency Indicator */
+      .urgency-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      .urgency-1 {
+        background-color: var(--urgent-color);
+      } /* Penting */
+      .urgency-2 {
+        background-color: #f59e0b;
+      } /* Biasa */
+      .urgency-3 {
+        background-color: #8b5cf6;
+      } /* Tidak Penting */
+
+      /* Sparkling/Glowing Button Effect */
+      @keyframes glowing-border {
+        0% {
+          border-color: var(--accent-color);
+          box-shadow: 0 0 3px var(--accent-color);
+        }
+        50% {
+          border-color: var(--accent-color-hover);
+          box-shadow: 0 0 10px var(--accent-color),
+            0 0 5px var(--accent-color-hover);
+        }
+        100% {
+          border-color: var(--accent-color);
+          box-shadow: 0 0 3px var(--accent-color);
+        }
+      }
+
+      .sparkle-btn {
+        animation: glowing-border 2.5s ease-in-out infinite;
+      }
+
+      /* Item Add/Remove Animations */
+      @keyframes slide-in {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .item-entering {
+        animation: slide-in 0.3s ease forwards;
+      }
+
+      @keyframes slide-out {
+        from {
+          opacity: 1;
+          transform: scale(1);
+        }
+        to {
+          opacity: 0;
+          transform: scale(0.9);
+        }
+      }
+      .item-exiting {
+        animation: slide-out 0.3s ease forwards;
+      }
+
+      /* Loading Screen Styles */
+      #loading-screen {
+        background-color: var(--bg-primary);
+        transition: opacity 0.5s ease-out;
+      }
+      .progress-bar {
+        width: 150px;
+        height: 6px;
+        background-color: var(--bg-tertiary);
+        border-radius: 3px;
+        overflow: hidden;
+      }
+      #progress-bar-fill {
+        width: 0%;
+        height: 100%;
+        background-color: var(--text-primary);
+        border-radius: 3px;
+        transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .intro-text span {
+        opacity: 0;
+        transition: opacity 0.5s ease;
+      }
+
+      /* Custom Select/Dropdown */
+      .custom-select-wrapper {
+        position: relative;
+      }
+      .custom-select-trigger {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.5rem 0.75rem;
+        border-radius: 0.5rem;
+        border: 1px solid var(--border-color);
+        background-color: var(--bg-secondary);
+        color: var(--text-primary);
+        cursor: pointer;
+        transition: border-color 0.2s, box-shadow 0.2s;
+      }
+      .custom-select-trigger:hover,
+      .custom-select-wrapper.open .custom-select-trigger {
+        box-shadow: 0 0 0 2px var(--accent-color);
+        border-color: transparent;
+      }
+      .custom-select-options {
+        position: absolute;
+        top: calc(100% + 4px);
+        left: 0;
+        right: 0;
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        z-index: 10;
+        max-height: 200px;
+        overflow-y: auto;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+      }
+      .custom-select-wrapper.open .custom-select-options {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+      .custom-select-option {
+        padding: 0.75rem 1rem;
+        cursor: pointer;
+      }
+      .custom-select-option:hover {
+        background-color: var(--bg-tertiary);
+      }
+      .custom-select-option.selected {
+        font-weight: 600;
+        background-color: var(--bg-tertiary);
+      }
+      .select-field {
+        display: none; /* Hide original select */
+      }
+
+      /* Custom File Upload */
+      .file-upload-wrapper {
+        position: relative;
+        overflow: hidden;
+        display: inline-block;
+      }
+      .file-upload-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .file-upload-wrapper input[type="file"] {
+        font-size: 100px;
+        position: absolute;
+        left: 0;
+        top: 0;
+        opacity: 0;
+        cursor: pointer;
+      }
+      .file-upload-text {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100px; /* Adjust as needed */
+      }
+    </style>
+    <!-- 
+    ================================================================
+    ======================= AKHIR BAGIAN CSS =======================
+    ================================================================
+    -->
+  </head>
+  <body>
+    <!-- 
+    ================================================================
+    ======================= AWAL BAGIAN HTML =======================
+    ================================================================
+    -->
+
+    <!-- Loading Screen -->
+    <div
+      id="loading-screen"
+      class="fixed inset-0 z-50 flex flex-col items-center justify-center"
+    >
+      <div class="text-center">
+        <h1
+          class="text-5xl font-bold tracking-tight intro-text"
+          id="intro-title"
+        ></h1>
+        <p class="mt-2 text-lg text-muted intro-text" id="intro-subtitle"></p>
+      </div>
+      <div class="progress-bar mt-8">
+        <div id="progress-bar-fill"></div>
+      </div>
+    </div>
+
+    <div
+      id="app-container"
+      class="container mx-auto max-w-4xl p-4 sm:p-6 md:p-8 hidden md:my-8"
+    >
+      <header class="text-center mb-6">
+        <h1 class="text-4xl font-bold tracking-tight" data-lang-key="app_title">
+          Daftar Belanja
+        </h1>
+        <p class="mt-2 text-lg text-muted" data-lang-key="app_subtitle">
+          Semua kebutuhan belanja Anda, terorganisir.
+        </p>
+        <p
+          id="watermark"
+          class="text-sm text-muted mt-2 cursor-pointer hover:text-[var(--text-primary)] transition-colors"
+        >
+          Created by Rahmad Sains
+        </p>
+      </header>
+
+      <main id="main-content">
+        <!-- Controls: Search, Sort, Theme, Currency -->
+        <section class="mb-6 flex flex-col gap-4">
+          <input
+            type="search"
+            id="search-input"
+            class="input-field w-full p-3 rounded-lg"
+            data-lang-key-placeholder="search_placeholder"
+          />
+          <div
+            class="grid grid-cols-2 md:flex md:flex-wrap md:items-center md:justify-end gap-3"
+          >
+            <div class="custom-select-wrapper">
+              <select id="sort-selector" class="select-field">
+                <option value="manual" data-lang-key="sort_manual">
+                  Urutan Manual
+                </option>
+                <option value="urgency" data-lang-key="sort_urgency">
+                  Urgensi
+                </option>
+                <option value="category" data-lang-key="sort_category">
+                  Kategori (A-Z)
+                </option>
+                <option value="price-desc" data-lang-key="sort_price_desc">
+                  Harga (Tertinggi)
+                </option>
+                <option value="price-asc" data-lang-key="sort_price_asc">
+                  Harga (Terendah)
+                </option>
+              </select>
+            </div>
+            <div class="custom-select-wrapper">
+              <select id="currency-selector" class="select-field">
+                <option value="IDR">Rp</option>
+                <option value="USD">$</option>
+                <option value="EUR">€</option>
+              </select>
+            </div>
+            <div class="col-span-2 flex items-center justify-center gap-3">
+              <button
+                id="stats-btn"
+                class="btn btn-secondary p-2 rounded-lg"
+                data-lang-key-title="stats_button_title"
+              >
+                <svg
+                  class="h-6 w-6"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M12 20V10M18 20V4M6 20V16" />
+                </svg>
+              </button>
+              <button
+                id="lang-switcher"
+                class="btn btn-secondary p-2 rounded-lg font-semibold w-12"
+              ></button>
+              <button
+                data-theme="light"
+                class="theme-btn p-2 rounded-lg"
+                data-lang-key-title="theme_light_title"
+              >
+                <svg
+                  class="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                  />
+                </svg>
+              </button>
+              <button
+                data-theme="dark"
+                class="theme-btn p-2 rounded-lg"
+                data-lang-key-title="theme_dark_title"
+              >
+                <svg
+                  class="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Add Item Form -->
+        <section class="card p-6 rounded-xl shadow-md mb-8">
+          <form id="add-item-form" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <input
+                type="text"
+                id="item-name"
+                class="input-field p-3 rounded-lg md:col-span-2"
+                data-lang-key-placeholder="item_name_placeholder"
+                required
+              />
+              <div class="custom-select-wrapper">
+                <select id="item-urgency" class="select-field">
+                  <option value="2" data-lang-key="urgency_normal">
+                    Biasa
+                  </option>
+                  <option value="1" data-lang-key="urgency_high">
+                    Penting
+                  </option>
+                  <option value="3" data-lang-key="urgency_low">
+                    Tidak Penting
+                  </option>
+                </select>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <input
+                type="text"
+                id="item-category"
+                class="input-field p-3 rounded-lg"
+                data-lang-key-placeholder="category_placeholder"
+              />
+              <input
+                type="text"
+                inputmode="decimal"
+                id="item-price"
+                class="input-field p-3 rounded-lg"
+                data-lang-key-placeholder="price_placeholder"
+              />
+              <input
+                type="url"
+                id="item-link"
+                placeholder="https://..."
+                class="input-field p-3 rounded-lg"
+              />
+            </div>
+            <div
+              class="file-upload-wrapper btn btn-secondary w-full p-3 rounded-lg"
+            >
+              <div class="file-upload-btn">
+                <svg
+                  class="h-6 w-6 mr-2"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
+                  />
+                </svg>
+                <span
+                  id="file-upload-text"
+                  class="file-upload-text"
+                  data-lang-key="upload_image_button"
+                  >Unggah Gambar (Opsional)</span
+                >
+              </div>
+              <input type="file" id="item-image" accept="image/*" />
+            </div>
+            <button
+              type="submit"
+              class="w-full btn btn-primary font-semibold py-3 px-4 rounded-lg"
+              data-lang-key="add_item_button"
+            >
+              Tambah Barang
+            </button>
+          </form>
+        </section>
+
+        <!-- Shopping List -->
+        <section>
+          <div class="flex justify-between items-center mb-4">
+            <h2
+              id="list-title"
+              class="text-2xl font-bold"
+              data-lang-key="list_title"
+            >
+              Daftar Belanja
+            </h2>
+            <div
+              id="total-price"
+              class="text-lg font-semibold px-4 py-2 rounded-lg"
+              style="background-color: var(--bg-tertiary)"
+            ></div>
+          </div>
+          <div id="shopping-list-container"></div>
+          <div
+            id="empty-state"
+            class="hidden text-center py-12 card rounded-xl shadow-sm mt-4"
+          >
+            <h3
+              class="mt-2 text-lg font-medium"
+              data-lang-key="empty_state_title"
+            >
+              Daftar ini kosong
+            </h3>
+            <p
+              class="mt-1 text-md text-muted"
+              data-lang-key="empty_state_subtitle"
+            >
+              Tambahkan barang baru di atas untuk memulai.
+            </p>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- Modals -->
+    <div
+      id="watermark-modal"
+      class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop"
+    >
+      <div
+        class="modal-content w-full max-w-xs rounded-2xl shadow-2xl p-6 text-center space-y-4"
+      >
+        <h3 class="text-xl font-bold">Created by Rahmad Sains</h3>
+        <a
+          href="https://linktr.ee/rahmdsai"
+          target="_blank"
+          class="flex items-center justify-center btn btn-primary w-full py-2 rounded-lg sparkle-btn"
+        >
+          <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 48 48">
+            <path
+              d="M41.1,14.4c-2.2-2.2-2.2-5.9,0-8.2c2.2-2.2,5.9-2.2,8.2,0c2.2,2.2,2.2,5.9,0,8.2C47,16.7,43.3,16.7,41.1,14.4z M28.2,14.4c-2.2-2.2-2.2-5.9,0-8.2c2.2-2.2,5.9-2.2,8.2,0c2.2,2.2,2.2,5.9,0,8.2C34.1,16.7,30.4,16.7,28.2,14.4z M15.3,14.4c-2.2-2.2-2.2-5.9,0-8.2c2.2-2.2,5.9-2.2,8.2,0c2.2,2.2,2.2,5.9,0,8.2C21.2,16.7,17.5,16.7,15.3,14.4z M2.4,14.4c-2.2-2.2-2.2-5.9,0-8.2c2.2-2.2,5.9-2.2,8.2,0c2.2,2.2,2.2,5.9,0,8.2C8.3,16.7,4.6,16.7,2.4,14.4z M41.1,27.3c-2.2-2.2-2.2-5.9,0-8.2c2.2-2.2,5.9-2.2,8.2,0c2.2,2.2,2.2,5.9,0,8.2C47,29.6,43.3,29.6,41.1,27.3z M2.4,27.3c-2.2-2.2-2.2-5.9,0-8.2c2.2-2.2,5.9-2.2,8.2,0c2.2,2.2,2.2,5.9,0,8.2C8.3,29.6,4.6,29.6,2.4,27.3z M41.1,40.2c-2.2-2.2-2.2-5.9,0-8.2c2.2-2.2,5.9-2.2,8.2,0c2.2,2.2,2.2,5.9,0,8.2C47,42.5,43.3,42.5,41.1,40.2z M28.2,40.2c-2.2-2.2-2.2-5.9,0-8.2c2.2-2.2,5.9-2.2,8.2,0c2.2,2.2,2.2,5.9,0,8.2C34.1,42.5,30.4,42.5,28.2,40.2z M15.3,40.2c-2.2-2.2-2.2-5.9,0-8.2c2.2-2.2,5.9-2.2,8.2,0c2.2,2.2,2.2,5.9,0,8.2C21.2,42.5,17.5,42.5,15.3,40.2z M2.4,40.2c-2.2-2.2-2.2-5.9,0-8.2c2.2-2.2,5.9-2.2,8.2,0c2.2,2.2,2.2,5.9,0,8.2C8.3,42.5,4.6,42.5,2.4,40.2z"
+            />
+          </svg>
+          <span>Linktree</span>
+        </a>
+        <a
+          href="https://www.instagram.com/rahmdsai"
+          target="_blank"
+          class="flex items-center justify-center btn btn-primary w-full py-2 rounded-lg sparkle-btn"
+        >
+          <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 48 48">
+            <path
+              d="M14.05,42.55c-7.75,0-14.05-6.3-14.05-14.05S6.3,14.45,14.05,14.45S28.1,20.75,28.1,28.5S21.8,42.55,14.05,42.55z M14.05,17.45c-6.1,0-11.05,4.95-11.05,11.05s4.95,11.05,11.05,11.05s11.05-4.95,11.05-11.05S20.15,17.45,14.05,17.45z M34.6,15.4c-2.1,0-3.8-1.7-3.8-3.8s1.7-3.8,3.8-3.8s3.8,1.7,3.8,3.8S36.7,15.4,34.6,15.4z M42.2,14.2V3.8C42.2,1.7,40.5,0,38.4,0H9.6C7.5,0,5.8,1.7,5.8,3.8v10.4C2.4,15.9,0,19.9,0,24.5c0,7.1,5.2,12.9,11.9,14c0.5,2.4,1.2,4.7,2.3,6.8c2.2,4.2,6.2,7.3,11,8.6c8.4,2.3,17.1-1.9,21.5-9.6c2.4-4.1,3.5-8.8,3.3-13.5C47.1,24.4,45.2,18.7,42.2,14.2z M39.2,34.5c-3.6,6.3-10.9,8.8-17.5,6.9c-3.8-1.1-7-3.6-8.8-7.1c-1-1.9-1.6-4-1.9-6.2c-0.2-1.2-0.2-2.3-0.2-3.5c0-3.6,1.8-6.8,4.6-8.8V6.8h25.8v7.9c3.1,2.1,5.1,5.6,5.1,9.6C46.3,27.9,43.7,31.9,39.2,34.5z"
+            />
+          </svg>
+          <span>Instagram</span>
+        </a>
+        <button
+          onclick="closeModal('watermark-modal')"
+          class="btn btn-secondary w-full py-2 rounded-lg mt-2"
+          data-lang-key="close_button"
+        >
+          Tutup
+        </button>
+      </div>
+    </div>
+    <div
+      id="stats-modal"
+      class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop"
+    >
+      <div
+        class="modal-content w-full max-w-md rounded-2xl shadow-2xl p-6 text-center space-y-4"
+      >
+        <h3 class="text-2xl font-bold" data-lang-key="stats_modal_title">
+          Statistik Belanja
+        </h3>
+        <div id="stats-content" class="space-y-4 text-left"></div>
+        <button
+          onclick="closeModal('stats-modal')"
+          class="btn btn-secondary w-full py-2 rounded-lg mt-2"
+          data-lang-key="close_button"
+        >
+          Tutup
+        </button>
+      </div>
+    </div>
+
+    <footer class="text-center py-8 text-sm text-muted">
+      <p>
+        &copy; 2025 Rahmad Sains.
+        <span data-lang-key="footer_rights">All rights reserved.</span>
+      </p>
+      <div class="flex justify-center items-center space-x-4 mt-2">
+        <a
+          href="https://linktr.ee/rahmdsai"
+          target="_blank"
+          class="hover:text-[var(--text-primary)] transition-colors"
+          >Linktree</a
+        >
+        <span>&bull;</span>
+        <a
+          href="https://www.instagram.com/rahmdsai"
+          target="_blank"
+          class="hover:text-[var(--text-primary)] transition-colors"
+          >Instagram</a
+        >
+      </div>
+    </footer>
+    <!-- 
+    ================================================================
+    ======================= AKHIR BAGIAN HTML ======================
+    ================================================================
+    -->
+
+    <!-- 
+    ================================================================
+    ==================== AWAL BAGIAN JAVASCRIPT ====================
+    ================================================================
+    -->
+    <script>
+      // --- INITIALIZATION ---
+      document.addEventListener("DOMContentLoaded", () => {
+        // DOM Element Selections
+        const elements = {
+          loadingScreen: document.getElementById("loading-screen"),
+          progressBarFill: document.getElementById("progress-bar-fill"),
+          appContainer: document.getElementById("app-container"),
+          introTitle: document.getElementById("intro-title"),
+          introSubtitle: document.getElementById("intro-subtitle"),
+          mainContent: document.getElementById("main-content"),
+          searchInput: document.getElementById("search-input"),
+          sortSelector: document.getElementById("sort-selector"),
+          currencySelector: document.getElementById("currency-selector"),
+          themeButtons: document.querySelectorAll(".theme-btn"),
+          addItemForm: document.getElementById("add-item-form"),
+          itemNameInput: document.getElementById("item-name"),
+          itemCategoryInput: document.getElementById("item-category"),
+          itemPriceInput: document.getElementById("item-price"),
+          itemLinkInput: document.getElementById("item-link"),
+          itemUrgencyInput: document.getElementById("item-urgency"),
+          itemImageInput: document.getElementById("item-image"),
+          fileUploadText: document.getElementById("file-upload-text"),
+          listTitle: document.getElementById("list-title"),
+          totalPriceEl: document.getElementById("total-price"),
+          shoppingListContainer: document.getElementById(
+            "shopping-list-container"
+          ),
+          emptyState: document.getElementById("empty-state"),
+          watermark: document.getElementById("watermark"),
+          langSwitcher: document.getElementById("lang-switcher"),
+          statsBtn: document.getElementById("stats-btn"),
+          statsContent: document.getElementById("stats-content"),
+        };
+
+        // Application state (Single List)
+        let appData = {
+          list: {
+            name: "Daftar Belanja",
+            items: [],
+          },
+        };
+        let draggedItem = null;
+
+        // --- DATA & STATE MANAGEMENT ---
+
+        function saveData() {
+          localStorage.setItem(
+            "shoppingProDataSingle",
+            JSON.stringify(appData)
+          );
+        }
+
+        function loadData() {
+          const data = localStorage.getItem("shoppingProDataSingle");
+          if (data) {
+            appData = JSON.parse(data);
+          }
+        }
+
+        // --- UI RENDERING ---
+
+        function renderAll() {
+          renderItems();
+        }
+
+        function renderItems() {
+          const list = appData.list;
+          const searchTerm = elements.searchInput.value.toLowerCase();
+          let filteredItems = list.items.filter(
+            (item) =>
+              item.name.toLowerCase().includes(searchTerm) ||
+              (item.category &&
+                item.category.toLowerCase().includes(searchTerm))
+          );
+
+          // Sorting logic
+          const sortType = elements.sortSelector.value;
+          const isDraggable = sortType === "manual";
+          if (!isDraggable) {
+            filteredItems = [...filteredItems];
+            switch (sortType) {
+              case "urgency":
+                filteredItems.sort(
+                  (a, b) => (a.urgency || 2) - (b.urgency || 2)
+                );
+                break;
+              case "category":
+                filteredItems.sort((a, b) =>
+                  (a.category || "").localeCompare(b.category || "")
+                );
+                break;
+              case "price-desc":
+                filteredItems.sort((a, b) => (b.price || 0) - (a.price || 0));
+                break;
+              case "price-asc":
+                filteredItems.sort((a, b) => (a.price || 0) - (b.price || 0));
+                break;
+            }
+          }
+
+          elements.shoppingListContainer.innerHTML = "";
+          elements.emptyState.classList.toggle(
+            "hidden",
+            filteredItems.length > 0
+          );
+
+          const itemsByCategory = filteredItems.reduce((acc, item) => {
+            const category = item.category || getTranslation("uncategorized");
+            if (!acc[category]) acc[category] = [];
+            acc[category].push(item);
+            return acc;
+          }, {});
+
+          for (const category in itemsByCategory) {
+            const categoryWrapper = document.createElement("div");
+            categoryWrapper.innerHTML = `<h3 class="text-lg font-semibold text-muted my-3">${category}</h3>`;
+            const listEl = document.createElement("ul");
+            listEl.className = "space-y-3";
+            listEl.dataset.category = category;
+
+            itemsByCategory[category].forEach((item) => {
+              const li = document.createElement("li");
+              li.className = `card p-4 rounded-xl shadow-sm flex items-center justify-between ${
+                isDraggable ? "cursor-grab" : ""
+              }`;
+              li.dataset.id = item.id;
+              li.draggable = isDraggable;
+              li.innerHTML = `
+                        <div class="flex items-center space-x-2 sm:space-x-4 flex-grow min-w-0">
+                            ${
+                              item.image
+                                ? `<img src="${item.image}" class="w-8 h-8 sm:w-10 sm:h-10 rounded-md object-cover flex-shrink-0">`
+                                : `<div class="w-8 h-8 sm:w-10 sm:h-10 rounded-md bg-[var(--bg-tertiary)] flex-shrink-0"></div>`
+                            }
+                            <div class="urgency-dot urgency-${
+                              item.urgency || 2
+                            }"></div>
+                            <input type="checkbox" class="custom-checkbox purchase-checkbox flex-shrink-0" ${
+                              item.purchased ? "checked" : ""
+                            }>
+                            <div class="flex-grow ${
+                              item.purchased ? "purchased" : ""
+                            } min-w-0">
+                                ${
+                                  item.link
+                                    ? `<a href="${item.link}" target="_blank" class="font-semibold text-base sm:text-lg break-words transition-colors hover:text-[var(--link-color)]">${item.name}</a>`
+                                    : `<p class="font-semibold text-base sm:text-lg break-words">${item.name}</p>`
+                                }
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2 flex-shrink-0 ml-2 sm:ml-4">
+                            <span class="font-mono text-right text-sm">${formatCurrency(
+                              item.price
+                            )}</span>
+                            <button class="delete-item-btn p-2 rounded-full hover:bg-[var(--bg-tertiary)]"><svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+                        </div>
+                    `;
+              listEl.appendChild(li);
+            });
+            categoryWrapper.appendChild(listEl);
+            elements.shoppingListContainer.appendChild(categoryWrapper);
+          }
+          updateTotalPrice();
+        }
+
+        // --- ITEM ACTIONS ---
+
+        function addItem(e) {
+          e.preventDefault();
+          const name = elements.itemNameInput.value.trim();
+          const category =
+            elements.itemCategoryInput.value.trim() ||
+            getTranslation("uncategorized");
+          const urgency = parseInt(elements.itemUrgencyInput.value);
+          let priceString = elements.itemPriceInput.value;
+          const link = elements.itemLinkInput.value.trim();
+          const imageFile = elements.itemImageInput.files[0];
+
+          if (getCurrency() === "IDR")
+            priceString = priceString.replace(/\./g, "");
+          else priceString = priceString.replace(/,/g, ".");
+
+          const price = parseFloat(priceString) || 0;
+
+          if (!name) {
+            showInputError(elements.itemNameInput);
+            return;
+          }
+
+          const handleImageAndSave = (imageData) => {
+            const newItem = {
+              id: Date.now(),
+              name,
+              category,
+              price,
+              link,
+              purchased: false,
+              urgency,
+              image: imageData,
+            };
+            appData.list.items.push(newItem);
+            saveData();
+            renderItems();
+            const newItemEl = document.querySelector(
+              `[data-id='${newItem.id}']`
+            );
+            if (newItemEl) newItemEl.classList.add("item-entering");
+            elements.addItemForm.reset();
+            elements.fileUploadText.textContent = getTranslation(
+              "upload_image_button"
+            );
+          };
+
+          if (imageFile) {
+            const reader = new FileReader();
+            reader.onload = (e) => handleImageAndSave(e.target.result);
+            reader.readAsDataURL(imageFile);
+          } else {
+            handleImageAndSave(null);
+          }
+        }
+
+        function deleteItem(itemId) {
+          const itemEl = document.querySelector(`[data-id='${itemId}']`);
+          if (itemEl) {
+            itemEl.classList.add("item-exiting");
+            itemEl.addEventListener(
+              "animationend",
+              () => {
+                appData.list.items = appData.list.items.filter(
+                  (item) => item.id !== itemId
+                );
+                saveData();
+                renderItems();
+              },
+              { once: true }
+            );
+          } else {
+            appData.list.items = appData.list.items.filter(
+              (item) => item.id !== itemId
+            );
+            saveData();
+            renderItems();
+          }
+        }
+
+        function togglePurchased(itemId) {
+          const item = appData.list.items.find((i) => i.id === itemId);
+          if (item) {
+            item.purchased = !item.purchased;
+            if (item.purchased) {
+              item.purchaseDate = Date.now();
+            } else {
+              delete item.purchaseDate;
+            }
+            saveData();
+            renderItems();
+          }
+        }
+
+        // --- DRAG & DROP ---
+
+        function handleDragStart(e) {
+          if (elements.sortSelector.value !== "manual") return;
+          draggedItem = e.target;
+          setTimeout(() => e.target.classList.add("dragging"), 0);
+        }
+
+        function handleDragEnd(e) {
+          if (!draggedItem) return;
+          draggedItem.classList.remove("dragging");
+          draggedItem = null;
+        }
+
+        function handleDragOver(e) {
+          e.preventDefault();
+          if (elements.sortSelector.value !== "manual") return;
+          const container = e.target.closest("ul");
+          if (!container) return;
+          container.classList.add("drag-over");
+          const afterElement = getDragAfterElement(container, e.clientY);
+          if (afterElement == null) {
+            container.appendChild(draggedItem);
+          } else {
+            container.insertBefore(draggedItem, afterElement);
+          }
+        }
+
+        function handleDragLeave(e) {
+          const container = e.target.closest("ul");
+          if (container) container.classList.remove("drag-over");
+        }
+
+        function handleDrop(e) {
+          e.preventDefault();
+          if (elements.sortSelector.value !== "manual") return;
+          const container = e.target.closest("ul");
+          if (container) container.classList.remove("drag-over");
+
+          const draggedItemId = parseInt(draggedItem.dataset.id);
+          const allItemElements = [
+            ...elements.shoppingListContainer.querySelectorAll("li"),
+          ];
+          const newOrderIds = allItemElements.map((li) =>
+            parseInt(li.dataset.id)
+          );
+
+          appData.list.items.sort(
+            (a, b) => newOrderIds.indexOf(a.id) - newOrderIds.indexOf(b.id)
+          );
+
+          const itemToUpdate = appData.list.items.find(
+            (i) => i.id === draggedItemId
+          );
+          const newCategory = container.dataset.category;
+          if (itemToUpdate && itemToUpdate.category !== newCategory) {
+            itemToUpdate.category = newCategory;
+          }
+
+          saveData();
+          renderItems();
+        }
+
+        function getDragAfterElement(container, y) {
+          const draggableElements = [
+            ...container.querySelectorAll("li:not(.dragging)"),
+          ];
+          return draggableElements.reduce(
+            (closest, child) => {
+              const box = child.getBoundingClientRect();
+              const offset = y - box.top - box.height / 2;
+              if (offset < 0 && offset > closest.offset) {
+                return { offset: offset, element: child };
+              } else {
+                return closest;
+              }
+            },
+            { offset: Number.NEGATIVE_INFINITY }
+          ).element;
+        }
+
+        // --- STATISTICS ---
+        function calculateStatistics() {
+          const purchasedItems = appData.list.items.filter(
+            (item) => item.purchased
+          );
+          const now = new Date();
+          const currentMonth = now.getMonth();
+          const currentYear = now.getFullYear();
+
+          const totalSpendingThisMonth = purchasedItems
+            .filter((item) => {
+              if (!item.purchaseDate) return false;
+              const purchaseDate = new Date(item.purchaseDate);
+              return (
+                purchaseDate.getMonth() === currentMonth &&
+                purchaseDate.getFullYear() === currentYear
+              );
+            })
+            .reduce((sum, item) => sum + (item.price || 0), 0);
+
+          const categoryCounts = purchasedItems.reduce((acc, item) => {
+            const category = item.category || getTranslation("uncategorized");
+            acc[category] = (acc[category] || 0) + 1;
+            return acc;
+          }, {});
+
+          const favoriteCategory = Object.keys(categoryCounts).reduce(
+            (a, b) => (categoryCounts[a] > categoryCounts[b] ? a : b),
+            getTranslation("stats_none")
+          );
+
+          const totalPurchasedValue = purchasedItems.reduce(
+            (sum, item) => sum + (item.price || 0),
+            0
+          );
+          const averagePrice =
+            purchasedItems.length > 0
+              ? totalPurchasedValue / purchasedItems.length
+              : 0;
+
+          return {
+            totalSpendingThisMonth,
+            favoriteCategory,
+            totalItemsPurchased: purchasedItems.length,
+            averagePrice,
+          };
+        }
+
+        function displayStatistics() {
+          const stats = calculateStatistics();
+          elements.statsContent.innerHTML = `
+                <div class="flex justify-between items-center">
+                    <span class="text-muted">${getTranslation(
+                      "stats_spending_month"
+                    )}</span>
+                    <span class="font-semibold">${formatCurrency(
+                      stats.totalSpendingThisMonth
+                    )}</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-muted">${getTranslation(
+                      "stats_favorite_category"
+                    )}</span>
+                    <span class="font-semibold">${stats.favoriteCategory}</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-muted">${getTranslation(
+                      "stats_total_items"
+                    )}</span>
+                    <span class="font-semibold">${
+                      stats.totalItemsPurchased
+                    }</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-muted">${getTranslation(
+                      "stats_avg_price"
+                    )}</span>
+                    <span class="font-semibold">${formatCurrency(
+                      stats.averagePrice
+                    )}</span>
+                </div>
+            `;
+          openModal("stats-modal");
+        }
+
+        // --- HELPERS ---
+
+        function updateTotalPrice() {
+          const total = appData.list.items.reduce(
+            (sum, item) => sum + (item.price || 0),
+            0
+          );
+          elements.totalPriceEl.textContent = `Total: ${formatCurrency(total)}`;
+        }
+
+        function formatCurrency(number) {
+          const currency = getCurrency();
+          const locales = { IDR: "id-ID", USD: "en-US", EUR: "de-DE" };
+          const options = {
+            style: "currency",
+            currency: currency,
+            minimumFractionDigits: currency === "IDR" ? 0 : 2,
+            maximumFractionDigits: currency === "IDR" ? 0 : 2,
+          };
+          return new Intl.NumberFormat(locales[currency], options).format(
+            number || 0
+          );
+        }
+
+        function formatRupiahInput(e) {
+          if (getCurrency() !== "IDR") return;
+          let value = e.target.value.replace(/\D/g, "");
+          e.target.value = value
+            ? new Intl.NumberFormat("id-ID").format(value)
+            : "";
+        }
+
+        function showInputError(element) {
+          element.classList.add("input-error");
+          setTimeout(() => {
+            element.classList.remove("input-error");
+          }, 2000);
+        }
+
+        function getCurrency() {
+          return elements.currencySelector.value;
+        }
+
+        window.openModal = (modalId) => {
+          const modal = document.getElementById(modalId);
+          modal.classList.remove("hidden");
+          modal.classList.add("flex");
+          setTimeout(() => {
+            modal.classList.add("modal-visible");
+          }, 10);
+        };
+        window.closeModal = (modalId) => {
+          const modal = document.getElementById(modalId);
+          modal.classList.remove("modal-visible");
+          setTimeout(() => {
+            modal.classList.add("hidden");
+            modal.classList.remove("flex");
+          }, 300);
+        };
+
+        // --- CUSTOM SELECT ---
+        function setupCustomSelect(selectElement) {
+          const wrapper = selectElement.parentElement;
+          if (wrapper.querySelector(".custom-select-trigger")) {
+            // If it exists, just update the text
+            const trigger = wrapper.querySelector(".custom-select-trigger");
+            trigger.textContent =
+              selectElement.options[selectElement.selectedIndex].text;
+            return;
+          }
+
+          const trigger = document.createElement("div");
+          trigger.className = "custom-select-trigger";
+
+          const optionsContainer = document.createElement("div");
+          optionsContainer.className = "custom-select-options";
+
+          const updateOptions = () => {
+            optionsContainer.innerHTML = "";
+            Array.from(selectElement.options).forEach((optionEl, index) => {
+              const optionDiv = document.createElement("div");
+              optionDiv.className = "custom-select-option";
+              optionDiv.textContent = optionEl.textContent;
+              optionDiv.dataset.value = optionEl.value;
+
+              optionDiv.addEventListener("click", (e) => {
+                e.stopPropagation();
+                selectElement.selectedIndex = index;
+                selectElement.dispatchEvent(new Event("change"));
+                wrapper.classList.remove("open");
+              });
+              optionsContainer.appendChild(optionDiv);
+            });
+          };
+
+          const updateTriggerText = () => {
+            trigger.textContent =
+              selectElement.options[selectElement.selectedIndex].text;
+            optionsContainer
+              .querySelectorAll(".custom-select-option")
+              .forEach((opt) => {
+                opt.classList.toggle(
+                  "selected",
+                  opt.dataset.value === selectElement.value
+                );
+              });
+          };
+
+          wrapper.appendChild(trigger);
+          wrapper.appendChild(optionsContainer);
+          updateOptions();
+          updateTriggerText();
+
+          selectElement.addEventListener("change", updateTriggerText);
+          trigger.addEventListener("click", () =>
+            wrapper.classList.toggle("open")
+          );
+          document.addEventListener("click", (e) => {
+            if (!wrapper.contains(e.target)) wrapper.classList.remove("open");
+          });
+        }
+
+        // --- TRANSLATION ---
+        const translations = {
+          id: {
+            app_title: "Daftar Belanja",
+            app_subtitle: "Semua kebutuhan belanja Anda, terorganisir.",
+            search_placeholder: "🔍 Cari barang...",
+            sort_manual: "Urutan Manual",
+            sort_urgency: "Urgensi",
+            sort_category: "Kategori (A-Z)",
+            sort_price_desc: "Harga (Tertinggi)",
+            sort_price_asc: "Harga (Terendah)",
+            theme_light_title: "Tema Terang",
+            theme_dark_title: "Tema Gelap",
+            item_name_placeholder: "Nama Barang",
+            urgency_normal: "Biasa",
+            urgency_high: "Penting",
+            urgency_low: "Tidak Penting",
+            category_placeholder: "Kategori (misal: Buah)",
+            price_placeholder: "Masukkan nilai harga",
+            upload_image_button: "Unggah Gambar (Opsional)",
+            add_item_button: "Tambah Barang",
+            list_title: "Daftar Belanja",
+            empty_state_title: "Daftar ini kosong",
+            empty_state_subtitle:
+              "Tambahkan barang baru di atas untuk memulai.",
+            close_button: "Tutup",
+            uncategorized: "Lainnya",
+            stats_button_title: "Lihat Statistik",
+            stats_modal_title: "Statistik Belanja",
+            stats_spending_month: "Pengeluaran Bulan Ini",
+            stats_favorite_category: "Kategori Favorit",
+            stats_total_items: "Total Barang Dibeli",
+            stats_avg_price: "Rata-rata Harga Barang",
+            stats_none: "Tidak ada",
+            footer_rights: "Hak cipta dilindungi .",
+          },
+          en: {
+            app_title: "Shopping List",
+            app_subtitle: "All your shopping needs, organized.",
+            search_placeholder: "🔍 Search items...",
+            sort_manual: "Manual Order",
+            sort_urgency: "Urgency",
+            sort_category: "Category (A-Z)",
+            sort_price_desc: "Price (High to Low)",
+            sort_price_asc: "Price (Low to High)",
+            theme_light_title: "Light Theme",
+            theme_dark_title: "Dark Theme",
+            item_name_placeholder: "Item Name",
+            urgency_normal: "Normal",
+            urgency_high: "Urgent",
+            urgency_low: "Not Important",
+            category_placeholder: "Category (e.g., Fruits)",
+            price_placeholder: "Enter item price",
+            upload_image_button: "Upload Image (Optional)",
+            add_item_button: "Add Item",
+            list_title: "Shopping List",
+            empty_state_title: "This list is empty",
+            empty_state_subtitle: "Add a new item above to get started.",
+            close_button: "Close",
+            uncategorized: "Uncategorized",
+            stats_button_title: "View Statistics",
+            stats_modal_title: "Shopping Statistics",
+            stats_spending_month: "Spending (This Month)",
+            stats_favorite_category: "Favorite Category",
+            stats_total_items: "Total Items Purchased",
+            stats_avg_price: "Average Item Price",
+            stats_none: "None",
+            footer_rights: "All rights reserved.",
+          },
+        };
+        let currentLang = "id";
+
+        function getTranslation(key) {
+          return translations[currentLang][key] || key;
+        }
+
+        function setLanguage(lang) {
+          currentLang = lang;
+          localStorage.setItem("shoppingLang", lang);
+          document.documentElement.lang = lang;
+
+          elements.langSwitcher.textContent = lang.toUpperCase();
+
+          document.querySelectorAll("[data-lang-key]").forEach((el) => {
+            el.textContent = getTranslation(el.dataset.langKey);
+          });
+          document
+            .querySelectorAll("[data-lang-key-placeholder]")
+            .forEach((el) => {
+              el.placeholder = getTranslation(el.dataset.langKeyPlaceholder);
+            });
+          document.querySelectorAll("[data-lang-key-title]").forEach((el) => {
+            el.title = getTranslation(el.dataset.langKeyTitle);
+          });
+
+          // Update custom selects
+          document
+            .querySelectorAll(".custom-select-wrapper")
+            .forEach((wrapper) => {
+              const select = wrapper.querySelector("select");
+              if (select) {
+                Array.from(select.options).forEach((option) => {
+                  const key = option.dataset.langKey;
+                  if (key) option.textContent = getTranslation(key);
+                });
+                const trigger = wrapper.querySelector(".custom-select-trigger");
+                if (trigger) {
+                  trigger.textContent =
+                    select.options[select.selectedIndex].text;
+                }
+              }
+            });
+        }
+
+        // --- EVENT LISTENERS ---
+        elements.addItemForm.addEventListener("submit", addItem);
+        elements.searchInput.addEventListener("input", renderItems);
+        elements.sortSelector.addEventListener("change", renderItems);
+        elements.currencySelector.addEventListener("change", () => {
+          localStorage.setItem("shoppingCurrency", getCurrency());
+          renderItems();
+        });
+        elements.itemPriceInput.addEventListener("input", formatRupiahInput);
+        elements.watermark.addEventListener("click", () =>
+          openModal("watermark-modal")
+        );
+        elements.statsBtn.addEventListener("click", displayStatistics);
+
+        elements.itemImageInput.addEventListener("change", () => {
+          const file = elements.itemImageInput.files[0];
+          if (file) {
+            elements.fileUploadText.textContent = file.name;
+          } else {
+            elements.fileUploadText.textContent = getTranslation(
+              "upload_image_button"
+            );
+          }
+        });
+        elements.langSwitcher.addEventListener("click", () => {
+          const newLang = currentLang === "id" ? "en" : "id";
+          setLanguage(newLang);
+        });
+
+        document.body.addEventListener("click", (e) => {
+          if (e.target.closest(".delete-item-btn")) {
+            const itemId = parseInt(e.target.closest("li").dataset.id);
+            deleteItem(itemId);
+          }
+          if (e.target.matches(".purchase-checkbox")) {
+            const itemId = parseInt(e.target.closest("li").dataset.id);
+            togglePurchased(itemId);
+          }
+        });
+
+        elements.shoppingListContainer.addEventListener(
+          "dragstart",
+          handleDragStart
+        );
+        elements.shoppingListContainer.addEventListener(
+          "dragend",
+          handleDragEnd
+        );
+        elements.shoppingListContainer.addEventListener(
+          "dragover",
+          handleDragOver
+        );
+        elements.shoppingListContainer.addEventListener(
+          "dragleave",
+          handleDragLeave
+        );
+        elements.shoppingListContainer.addEventListener("drop", handleDrop);
+
+        const savedTheme = localStorage.getItem("shoppingTheme") || "light";
+        document.documentElement.setAttribute("data-theme", savedTheme);
+        elements.themeButtons.forEach((btn) => {
+          btn.classList.toggle("active", btn.dataset.theme === savedTheme);
+          btn.addEventListener("click", () => {
+            document.documentElement.setAttribute(
+              "data-theme",
+              btn.dataset.theme
+            );
+            localStorage.setItem("shoppingTheme", btn.dataset.theme);
+            elements.themeButtons.forEach((b) => b.classList.remove("active"));
+            btn.classList.add("active");
+          });
+        });
+
+        // --- INITIAL LOAD & INTRO ---
+        function startApp() {
+          document.querySelectorAll(".select-field").forEach(setupCustomSelect);
+          const savedLang = localStorage.getItem("shoppingLang") || "id";
+          setLanguage(savedLang);
+
+          elements.currencySelector.value =
+            localStorage.getItem("shoppingCurrency") || "IDR";
+          loadData();
+          renderAll();
+        }
+
+        function animateIntroText(element, text) {
+          text.split("").forEach((char) => {
+            const span = document.createElement("span");
+            span.textContent = char === " " ? "\u00A0" : char; // Use non-breaking space
+            element.appendChild(span);
+          });
+        }
+
+        const titleText = "Shopping List";
+        const subtitleText = "by Rahmad Sains";
+        animateIntroText(elements.introTitle, titleText);
+        animateIntroText(elements.introSubtitle, subtitleText);
+
+        const allChars = document.querySelectorAll(".intro-text span");
+        let revealedChars = 0;
+
+        const observer = new MutationObserver(() => {
+          const progress =
+            parseFloat(elements.progressBarFill.style.width) / 100;
+          const targetRevealed = Math.floor(progress * allChars.length);
+          for (let i = revealedChars; i < targetRevealed; i++) {
+            if (allChars[i]) allChars[i].style.opacity = "1";
+          }
+          revealedChars = targetRevealed;
+        });
+        observer.observe(elements.progressBarFill, {
+          attributes: true,
+          attributeFilter: ["style"],
+        });
+
+        setTimeout(() => {
+          elements.progressBarFill.style.width = "100%";
+        }, 100);
+
+        elements.progressBarFill.addEventListener(
+          "transitionend",
+          () => {
+            setTimeout(() => {
+              elements.loadingScreen.style.opacity = "0";
+              elements.loadingScreen.addEventListener(
+                "transitionend",
+                () => {
+                  elements.loadingScreen.classList.add("hidden");
+                  elements.appContainer.classList.remove("hidden");
+                  startApp();
+                },
+                { once: true }
+              );
+            }, 300);
+          },
+          { once: true }
+        );
+      });
+    </script>
+  </body>
+</html>
